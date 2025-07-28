@@ -173,3 +173,20 @@ Analyzing whether **yesterday's** Fear & Greed Index score can predict **today's
 
 
 ---
+
+Okay, here is a summary of the LSTM model's predictions for the next trading period, formatted for your GitHub `README.md` file:
+
+---
+
+## � LSTM Model Predictions for Next Trading Period
+
+Based on the LSTM model trained on historical data for the top 15 coins by USD trade volume, here are the key predictions:
+
+*   **� Majority Sell Predictions:** For most of the top 15 coins, the LSTM model predicted a 'Sell' direction (represented by 0) for the next trading period.
+*   **� Limited Buy Predictions:** Only one coin, **TOKEN142**, received a 'Buy' prediction (represented by 1).
+*   **� Potential Interpretation:**
+    *   The model's output suggests a predominantly **bearish or cautious outlook** for the near future across these major traded assets.
+    *   The singular 'Buy' signal for TOKEN142 could indicate a unique pattern or momentum specific to that coin's recent history within the model's context.
+    *   It's important to note that these predictions are based solely on the historical data and features used for these specific coins and should be interpreted within the model's limitations.
+
+---
