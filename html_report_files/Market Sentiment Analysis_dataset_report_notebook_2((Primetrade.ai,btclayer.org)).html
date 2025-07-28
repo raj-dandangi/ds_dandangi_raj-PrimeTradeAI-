@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Analytics Report</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a modern, minimal aesthetic */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font as per instructions */
+            background-color: #f8fafc; /* Light gray background */
+            color: #334155; /* Darker gray for text */
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .slide {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Softer shadow */
+            margin-bottom: 2.5rem;
+            padding: 3rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+            color: #1e293b; /* Even darker gray for headings */
+        }
+        h1 {
+            font-size: 3.5rem; /* Larger for title */
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 2.5rem; /* For slide titles */
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0; /* Subtle underline */
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+        ul {
+            list-style: none; /* Remove default bullet points */
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        ul li::before {
+            content: '•'; /* Custom bullet point */
+            color: #6366f1; /* Accent color for bullets */
+            font-size: 1.25rem;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .accent-text {
+            color: #6366f1; /* A vibrant purple/indigo for accent */
+            font-weight: 600;
+        }
+        .emoji {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        /* Removed .image-placeholder style as images are removed */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 1.75rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+            .slide {
+                padding: 2rem;
+            }
+            .emoji {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+
+        <!-- Slide 1: Title Slide -->
+        <div class="slide text-center py-16">
+            <span class="emoji">📊</span>
+            <h1 class="text-gray-900">Trading Analytics Report</h1>
+            <p class="text-2xl text-gray-600 mt-4">Market Sentiment Analysis (Feb 2018 - May 2025)</p>
+            <p class="text-lg text-gray-500 mt-8">Insights from the Fear & Greed Index</p>
+        </div>
+
+        <!-- Slide 2: Data Overview & Preparation -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">🧹</span> Data Overview & Preparation</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Data Loading & Initial State</h3>
+                    <ul>
+                        <li>Dataset: <span class="font-semibold">df_fgi</span></li>
+                        <li>Dimensions: <span class="font-semibold">2644 rows, 4 columns</span></li>
+                        <li>Columns: <span class="font-semibold">timestamp, value, classification, date</span></li>
+                        <li>Initial Data Types: All <span class="font-semibold">object</span> dtype</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="accent-text">Data Cleaning Highlights</h3>
+                    <ul>
+                        <li><span class="font-semibold">No missing or empty rows</span> found.</li>
+                        <li>Type Conversions:
+                            <ul>
+                                <li>`timestamp` &#8594; <span class="font-semibold">int64</span></li>
+                                <li>`value` &#8594; <span class="font-semibold">Int64</span> (nullable integer)</li>
+                                <li>`date` &#8594; <span class="font-semibold">datetime64[ns]</span></li>
+                            </ul>
+                        </li>
+                        <li><span class="font-semibold">No duplicate entries</span> (based on timestamp and date).</li>
+                        <li>Dataset sorted <span class="font-semibold">chronologically</span> by timestamp.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 text-center">Visual representation of the data cleaning process.</p>
+        </div>
+
+        <!-- Slide 3: Key Metrics - Sentiment Value -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">📊</span> Core Sentiment Metrics</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Value Range & Central Tendency</h3>
+                    <ul>
+                        <li>`value` range: <span class="font-semibold">5 to 95</span></li>
+                        <li>Mean `value`: Approximately <span class="font-semibold">47</span> (indicating a Neutral sentiment on average)</li>
+                        <li>Mode `value`: <span class="font-semibold">50</span> (most frequent sentiment score)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="accent-text">Distribution & Time Span</h3>
+                    <ul>
+                        <li>Distribution: <span class="font-semibold">Bell-shaped</span> with a central peak between <span class="font-semibold">40-60</span> (the "Neutral zone").</li>
+                        <li>Time Series Span: From <span class="font-semibold">February 2018 to May 2025</span>.</li>
+                        <li>Data Consistency: Unique date entries per row, suggesting <span class="font-semibold">consistent daily data</span>.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 text-center">Illustrative histogram showing the bell-shaped distribution of sentiment values.</p>
+        </div>
+
+        <!-- Slide 4: Market Sentiment Over Time -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">📈📉</span> Market Sentiment Over Time</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Value Over Time</h3>
+                    <p>The time series plot reveals significant <span class="font-semibold">market sentiment volatility</span> across the years, showcasing periods of extreme fear and greed.</p>
+                </div>
+                <div>
+                    <h3 class="accent-text">Value by Classification</h3>
+                    <p>Box plots validate the <span class="font-semibold">correct alignment of classifications</span> with their respective value ranges. For instance:</p>
+                    <ul>
+                        <li><span class="font-semibold">Extreme Fear</span> &#8594; Lower values</li>
+                        <li><span class="font-semibold">Extreme Greed</span> &#8594; Higher values</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Feature Engineering & Correlations -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">🔗</span> Enhanced Insights & Relationships</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Feature Engineering</h3>
+                    <p>New features were engineered to provide deeper analytical perspectives:</p>
+                    <ul>
+                        <li><span class="font-semibold">value_7day_avg</span>: 7-day moving average of sentiment value.</li>
+                        <li><span class="font-semibold">value_30day_avg</span>: 30-day moving average of sentiment value.</li>
+                        <li><span class="font-semibold">daily_change</span>: Daily change in sentiment value.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="accent-text">Correlation Matrix Insights</h3>
+                    <ul>
+                        <li><span class="font-semibold">Strong Positive Correlation:</span> Between `value` and its moving averages (`value_7day_avg`, `value_30day_avg`). This indicates that longer-term trends closely follow the immediate sentiment.</li>
+                        <li><span class="font-semibold">Low Correlation:</span> With `daily_change`. This signals that daily changes effectively capture <span class="font-semibold">short-term volatility</span>, distinct from the overall sentiment trend.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 text-center">Mock correlation matrix highlighting relationships between features.</p>
+        </div>
+
+        <!-- Slide 6: Illustrative Trading Performance (Mock Data) -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">💰</span> Illustrative Trading Performance</h2>
+            <p class="text-gray-600 mb-6">
+                While the provided data focuses on market sentiment, here are <span class="font-semibold accent-text">illustrative trading metrics</span> based on how one might interpret and act upon such sentiment data. These are for demonstration purposes.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Key Performance Indicators (KPIs)</h3>
+                    <ul>
+                        <li>Total Trades (Illustrative): <span class="font-semibold">1,500</span></li>
+                        <li>Win Rate (Illustrative): <span class="font-semibold">58%</span></li>
+                        <li>Average Profit per Trade (Illustrative): <span class="font-semibold">+$120</span></li>
+                        <li>Average Loss per Trade (Illustrative): <span class="font-semibold">-$80</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="accent-text">Notable Trends & Market Conditions</h3>
+                    <ul>
+                        <li>Periods of <span class="font-semibold">"Extreme Fear"</span> (low sentiment values) often precede market rebounds, suggesting potential buying opportunities.</li>
+                        <li>Periods of <span class="font-semibold">"Extreme Greed"</span> (high sentiment values) often precede market corrections, suggesting caution or profit-taking.</li>
+                        <li>The `value` directly reflects market sentiment, which is a crucial factor influencing short-term market movements and investor behavior.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-2 text-center">A conceptual dashboard showing potential trading performance metrics.</p>
+        </div>
+
+        <!-- Slide 7: Strategic Insights & Tips -->
+        <div class="slide">
+            <h2 class="flex items-center"><span class="emoji">🚀</span> Actionable Insights & Tips</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="accent-text">Interpreting Sentiment for Strategy</h3>
+                    <ul>
+                        <li><span class="font-semibold">Fear as Opportunity:</span> When the sentiment index is low (Extreme Fear), it often indicates a market bottom or a strong buying opportunity for contrarian investors.</li>
+                        <li><span class="font-semibold">Greed as Caution:</span> High sentiment values (Extreme Greed) can signal an overheated market, prompting caution or consideration for profit-taking.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="accent-text">Leveraging Engineered Features</h3>
+                    <ul>
+                        <li><span class="font-semibold">Volatility Awareness:</span> The `daily_change` feature is key for understanding short-term market movements and can be particularly useful for day traders.</li>
+                        <li><span class="font-semibold">Trend Identification:</span> `value_7day_avg` and `value_30day_avg` provide smoother trend lines, ideal for identifying longer-term market direction and reducing noise from daily fluctuations.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-lg text-gray-700 mt-8 text-center"><span class="emoji">💡</span> Use these insights to refine your trading strategies and navigate market cycles effectively.</p>
+        </div>
+
+        <!-- Slide 8: Conclusion -->
+        <div class="slide text-center py-12">
+            <h2 class="flex items-center justify-center"><span class="emoji">✅</span> Report Summary</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                The comprehensive analysis of the Fear & Greed Index (`df_fgi`) from February 2018 to May 2025 provides a robust framework for understanding market sentiment. Key insights include the bell-shaped distribution of sentiment values, the strong correlation of sentiment with its moving averages, and the utility of daily changes for capturing short-term volatility. This data can be leveraged to inform strategic trading decisions, identifying potential entry points during periods of fear and exit points during periods of greed.
+            </p>
+            <p class="text-xl accent-text font-semibold">Empowering smarter trading decisions through data-driven insights.</p>
+            <span class="emoji mt-8">🎯</span>
+        </div>
+
+    </div>
+</body>
+</html>

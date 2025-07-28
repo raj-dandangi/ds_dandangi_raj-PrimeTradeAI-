@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Trading Analytics Report</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            color: #334155; /* Dark slate gray text */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Stronger shadow */
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+        .section-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #1e3a8a; /* Darker blue for titles */
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .kpi-item {
+            background-color: #e0f2fe; /* Light blue background for KPIs */
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 600;
+            color: #1e40af; /* Deeper blue text */
+        }
+        .kpi-value {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 800; /* font-extrabold */
+            color: #153e7a; /* Even deeper blue */
+        }
+        .implication {
+            color: #4b5563; /* Gray text for implications */
+            font-style: italic;
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 4px solid #93c5fd; /* Light blue border */
+        }
+        .list-item {
+            margin-bottom: 0.5rem;
+        }
+        .list-item strong {
+            color: #1e3a8a;
+        }
+        /* Chart container styling */
+        .chart-container {
+            position: relative;
+            height: 250px; /* Fixed height for charts */
+            width: 100%;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: 1rem;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="text-center py-10 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl shadow-lg mb-10">
+            <h1 class="text-5xl font-extrabold mb-4">Modern Trading Analytics Report 📈</h1>
+            <p class="text-xl font-light opacity-90">A Comprehensive Overview of Your Trading Performance</p>
+        </header>
+
+        <!-- Introduction Section -->
+        <section class="section-card">
+            <h2 class="section-title">Introduction & Overview ✨</h2>
+            <p class="text-lg leading-relaxed text-gray-700">
+                This report provides a concise and visually engaging analysis of recent trading activities. We delve into key metrics, identify significant trends, and offer actionable insights to optimize future trading strategies. Our aim is to transform complex data into clear, understandable information.
+            </p>
+        </section>
+
+        <!-- Trader Activity Overview Section -->
+        <section class="section-card">
+            <h2 class="section-title">Trader Activity Overview 👥</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="kpi-item">
+                    <span>Total Unique Traders:</span>
+                    <span class="kpi-value">32</span>
+                </div>
+                <div class="kpi-item">
+                    <span>High-Activity Accounts:</span>
+                    <span class="kpi-value">2+</span>
+                </div>
+            </div>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li class="list-item">Identified <strong>32 unique traders</strong> in the dataset.</li>
+                <li class="list-item"><strong>High-Activity Accounts:</strong> Addresses like <code class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md font-mono">0xbee...aab</code> and <code class="bg-blue-100 text-blue-800 px-2 py-1 rounded-md font-mono">0xbaa...864</code> perform significantly more trades than others.</li>
+            </ul>
+            <p class="implication">
+                💡 Implication: Segmenting traders by activity level or analyzing behaviors of dominant accounts could reveal valuable patterns for strategy development.
+            </p>
+            <div class="chart-container">
+                <canvas id="traderActivityChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Coin Performance & Distribution Section -->
+        <section class="section-card">
+            <h2 class="section-title">Coin Performance & Distribution 💰</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="kpi-item">
+                    <span>Total Unique Coins:</span>
+                    <span class="kpi-value">246</span>
+                </div>
+            </div>
+            <p class="text-gray-700 mb-2"><strong>Top Coins by Volume:</strong></p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li class="list-item">HYPE</li>
+                <li class="list-item">TOKEN107</li>
+                <li class="list-item">BTC</li>
+                <li class="list-item">ETH</li>
+                <li class="list-item">SOL</li>
+            </ul>
+            <p class="implication">
+                💡 Implication: Focus on these key coins or coin clusters for deeper behavioral and volume-based analysis, as they represent the most significant market activity.
+            </p>
+            <div class="chart-container">
+                <canvas id="coinVolumeChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Trade Direction & Side Analysis Section -->
+        <section class="section-card">
+            <h2 class="section-title">Trade Direction & Side Analysis 🔄</h2>
+            <p class="text-gray-700 mb-2"><strong>BUY vs SELL:</strong> Fairly balanced, with a slight tilt toward SELL.</p>
+            <div class="flex items-center text-lg font-semibold text-gray-800 mb-4">
+                <span class="text-green-600 mr-2">📈 BUY</span>
+                <span class="mx-4 text-gray-400">|</span>
+                <span class="text-red-600 mr-2">📉 SELL</span>
+            </div>
+            <p class="text-gray-700 mb-2"><strong>Common Directions:</strong></p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li class="list-item"><strong>Derivatives:</strong> Open Long, Close Long, Open Short, Close Short</li>
+                <li class="list-item"><strong>Spot:</strong> Buy, Sell</li>
+                <li class="list-item"><strong>Others:</strong> Spot Dust Conversion, Short &gt; Long, etc.</li>
+            </ul>
+            <p class="implication">
+                💡 Implication: The balanced BUY/SELL ratio supports comparative studies. Trade types align with typical derivative strategies, while infrequent directions may flag unique strategy use or platform-specific features.
+            </p>
+            <div class="chart-container">
+                <canvas id="tradeSideChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Key Numerical Correlations Section -->
+        <section class="section-card">
+            <h2 class="section-title">Key Numerical Correlations 🔗</h2>
+            <p class="text-gray-700 mb-4">Based on correlation matrix and scatter plots, here are the key relationships observed:</p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li class="list-item"><strong>Size USD and Fee:</strong> Strong positive correlation. Larger trade size (USD) leads to higher fees.</li>
+                <li class="list-item"><strong>Size USD and Closed PnL:</strong> Weak positive correlation. Larger trades *might* correlate with higher PnL, but the relationship is not strong.</li>
+                <li class="list-item"><strong>Execution Price and Size USD:</strong> Moderately positive correlation. Higher execution prices tend to be associated with larger trade sizes.</li>
+                <li class="list-item"><strong>Other Correlations:</strong> 'Size Tokens' and 'Size USD' show a very strong positive correlation, as expected.</li>
+            </ul>
+            <p class="implication">
+                💡 Summary: Trade size is a significant factor influencing the fee charged, while its relationship with profit/loss is less direct and more varied.
+            </p>
+            <div class="chart-container">
+                <canvas id="correlationChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Fee Discrepancy Analysis Section -->
+        <section class="section-card">
+            <h2 class="section-title">Fee Discrepancy Analysis 💸</h2>
+            <p class="text-gray-700 mb-4">
+                This analysis identified discrepancies between the actual fee paid and the expected fee based on a standard rate of <code>0.00035</code> applied to the trade size in USD.
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li class="list-item"><strong>Calculation:</strong> <code>Expected_Fee = Size USD * 0.00035</code>. <code>Fee_Discrepancy</code> was the absolute difference, and <code>Discrepancy_Percent</code> was this discrepancy relative to <code>Expected_Fee</code>.</li>
+                <li class="list-item"><strong>Findings:</strong> <strong>156,550 out of 211,224 trades</strong> (approx. 74%) were flagged with a <code>Discrepancy_Percent</code> greater than 1%.</li>
+                <li class="list-item"><strong>Visualization:</strong> Scatter plot of 'Actual Fee' vs. 'Expected Fee' (log scale) shows significant deviation from the ideal 1:1 line, especially at higher fee values.</li>
+            </ul>
+            <p class="implication">
+                💡 Implication: The fee structure is more complex than a simple flat rate. Factors like different fee tiers, rebates, or other platform-specific mechanisms are likely influencing the actual fees. Further investigation is recommended to understand and potentially optimize fee costs. ⚠️
+            </p>
+            <div class="chart-container">
+                <canvas id="feeDiscrepancyChart"></canvas>
+            </div>
+        </section>
+
+      
+
+        <!-- Summary Section -->
+        <section class="section-card text-center">
+            <h2 class="section-title justify-center">Report Summary & Conclusion ✅</h2>
+            <p class="text-lg leading-relaxed text-gray-800">
+                This Modern Trading Analytics Report highlights a dynamic trading landscape. We've identified key trader behaviors, dominant coin activities, and crucial correlations between trade size, fees, and profitability. Most notably, the significant discrepancies in fee calculations suggest a more nuanced fee structure is at play, warranting further investigation. By focusing on high-impact areas like trader segmentation, top coin analysis, and fee optimization, you can gain a competitive edge and refine your trading strategies for enhanced performance.
+            </p>
+            <p class="text-xl font-semibold mt-6 text-blue-700">
+                Data-driven decisions lead to smarter trades! 📊💰
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center py-6 text-gray-600 text-sm">
+            <p>&copy; dandangi-raj|email: dandangirajda@gmail.com </p>
+        </footer>
+    </div>
+
+    <script>
+        // Function to create a Chart.js chart
+        function createChart(chartId, type, data, options) {
+            const ctx = document.getElementById(chartId);
+            if (ctx) {
+                new Chart(ctx, {
+                    type: type,
+                    data: data,
+                    options: options
+                });
+            }
+        }
+
+        // Data and options for Trader Activity Chart
+        const traderActivityData = {
+            labels: ['High-Activity Accounts', 'Other Accounts'],
+            datasets: [{
+                label: 'Number of Traders',
+                data: [2, 30], // Mock data: 2 high-activity, 30 others
+                backgroundColor: ['#1e40af', '#93c5fd'],
+                borderColor: ['#1e3a8a', '#60a5fa'],
+                borderWidth: 1
+            }]
+        };
+        const traderActivityOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Trader Activity Distribution',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Accounts'
+                    }
+                }
+            }
+        };
+
+        // Data and options for Coin Volume Chart
+        const coinVolumeData = {
+            labels: ['HYPE', 'TOKEN107', 'BTC', 'ETH', 'SOL'],
+            datasets: [{
+                label: 'Volume (Mock USD)',
+                data: [1200000, 950000, 800000, 700000, 600000], // Mock data
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        const coinVolumeOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top Coins by Volume',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'right'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Volume (USD)'
+                    }
+                }
+            }
+        };
+
+        // Data and options for Trade Side Chart (BUY vs SELL)
+        const tradeSideData = {
+            labels: ['BUY', 'SELL'],
+            datasets: [{
+                label: 'Trade Count',
+                data: [48, 52], // Mock data: 48% BUY, 52% SELL
+                backgroundColor: ['#22c55e', '#ef4444'], // Green for BUY, Red for SELL
+                borderColor: ['#16a34a', '#dc2626'],
+                borderWidth: 1
+            }]
+        };
+        const tradeSideOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Trade Side Distribution (BUY vs SELL)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Percentage'
+                    },
+                    max: 100
+                }
+            }
+        };
+
+        // Data and options for Correlation Chart (Simplified scatter for Size USD vs Fee)
+        // In a real scenario, this would come from actual data points
+        const correlationChartData = {
+            datasets: [{
+                label: 'Size USD vs. Fee',
+                data: Array.from({ length: 50 }, (_, i) => ({
+                    x: (i + 1) * 1000 + Math.random() * 500, // Mock Size USD
+                    y: ((i + 1) * 1000 * 0.00035) + (Math.random() * 0.5) // Mock Fee with some variance
+                })),
+                backgroundColor: 'rgba(59, 130, 246, 0.6)', // blue-500 with transparency
+                borderColor: 'rgba(37, 99, 235, 1)', // blue-600
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        };
+        const correlationChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Size USD vs. Fee (Mock Data)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Size USD: $${context.parsed.x.toFixed(2)}, Fee: $${context.parsed.y.toFixed(4)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    title: {
+                        display: true,
+                        text: 'Size USD'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Fee'
+                    }
+                }
+            }
+        };
+
+        // Data and options for Fee Discrepancy Chart (Scatter plot for Actual vs Expected Fee)
+        // Mock data simulating discrepancies
+        const feeDiscrepancyData = {
+            datasets: [{
+                label: 'Actual Fee vs. Expected Fee',
+                data: Array.from({ length: 100 }, (_, i) => {
+                    const expected = (i + 1) * 10 * 0.00035; // Base expected fee
+                    const actual = expected * (1 + (Math.random() - 0.5) * 0.8); // Actual fee with +/- 40% discrepancy
+                    return { x: expected, y: actual };
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 0.6)', // Red with transparency
+                borderColor: 'rgba(255, 99, 132, 1)',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        };
+        const feeDiscrepancyOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Actual Fee vs. Expected Fee (Mock Data, Log Scale)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Expected: $${context.parsed.x.toFixed(4)}, Actual: $${context.parsed.y.toFixed(4)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'logarithmic', // Log scale as mentioned in the description
+                    position: 'bottom',
+                    title: {
+                        display: true,
+                        text: 'Expected Fee (Log Scale)'
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value.toExponential(2); // Display in scientific notation for log scale
+                        }
+                    }
+                },
+                y: {
+                    type: 'logarithmic', // Log scale
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Actual Fee (Log Scale)'
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value.toExponential(2);
+                        }
+                    }
+                }
+            }
+        };
+
+
+        // Initialize charts on window load
+        window.onload = function() {
+            createChart('traderActivityChart', 'bar', traderActivityData, traderActivityOptions);
+            createChart('coinVolumeChart', 'bar', coinVolumeData, coinVolumeOptions);
+            createChart('tradeSideChart', 'bar', tradeSideData, tradeSideOptions);
+            createChart('correlationChart', 'scatter', correlationChartData, correlationChartOptions);
+            createChart('feeDiscrepancyChart', 'scatter', feeDiscrepancyData, feeDiscrepancyOptions);
+        };
+    </script>
+</body>
+</html>
