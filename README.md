@@ -38,3 +38,15 @@ graph TD
     W --> X[Visualize Actual vs. Expected Fee]
     X --> Y[End]
 ```
+
+Please [click-here](html_report_files/note_book_1.pdf) to view the full report 
+
+---
+
+step 2 :  work flowchart & steps performed on dataset 2. Historical Trader Data 
+
+
+Please [click-here](html_report_files/note_book_2.pdf) to view the full report 
+
+---
+
