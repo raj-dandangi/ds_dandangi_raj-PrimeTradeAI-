@@ -171,11 +171,6 @@ Analyzing whether **yesterday's** Fear & Greed Index score can predict **today's
 *   **❓ 4. Sentiment Alone Isn't a Predictor**
     *   In simple terms, relying solely on yesterday's Fear & Greed Index value is **not a reliable way to forecast** today's overall trader behavior, including profitability or trading volume. Other factors are likely more influential.
 
-
----
-
-Okay, here is a summary of the LSTM model's predictions for the next trading period, formatted for your GitHub `README.md` file:
-
 ---
 
 ## � LSTM Model Predictions for Next Trading Period
