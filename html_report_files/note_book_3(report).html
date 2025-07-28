@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Trading Analytics Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Default to Inter, can be overridden by other files */
+            background-color: #f8faff; /* Light background for a clean look */
+            color: #334155; /* Darker text for readability */
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .header-section {
+            background-color: #4f46e5; /* Bold contrast for header */
+            color: #ffffff;
+            padding: 3rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .kpi-card {
+            background-color: #ecfdf5; /* Soft pastel green */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #059669; /* Stronger green */
+            margin-bottom: 0.5rem;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            color: #334155;
+            font-weight: 500;
+        }
+        .bar-chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        .bar-chart-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .bar-label {
+            width: 120px;
+            flex-shrink: 0;
+            font-weight: 500;
+            color: #475569;
+        }
+        .bar {
+            height: 25px;
+            background-color: #6366f1; /* Primary blue for bars */
+            border-radius: 0.25rem;
+            transition: width 0.5s ease-in-out;
+            position: relative;
+        }
+        .bar-value {
+            position: absolute;
+            right: 0.5rem;
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 25px;
+        }
+        .insights-list li {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        .insights-list li strong {
+            color: #4f46e5;
+        }
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: #fefefe;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #334155;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position the tooltip above the text */
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #334155 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Specific styles from other files */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            box-sizing: border-box;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .slide-title-bg {
+            background: linear-gradient(135deg, #2C3E50 0%, #1A5276 100%);
+            color: #ECF0F1;
+        }
+        .slide-title-bg h1, .slide-title-bg h2 {
+            color: #ECF0F1;
+        }
+        .accent-teal { color: #1ABC9C; }
+        .accent-gold { color: #F39C12; }
+        .text-red-500 { color: #E74C3C; }
+        .divider-teal {
+            width: 80px;
+            height: 4px;
+            background-color: #1ABC9C;
+            border-radius: 9999px;
+            margin: 1rem 0;
+        }
+        .divider-subtle {
+            width: 60px;
+            height: 2px;
+            background-color: #BDC3C7;
+            border-radius: 9999px;
+            margin: 0.5rem 0;
+        }
+        .divider-vertical {
+            width: 2px;
+            background-color: #BDC3C7;
+            height: 100%;
+            margin: 0 2rem;
+        }
+        .conceptual-graphic {
+            background-color: #ECF0F1;
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.25rem;
+            color: #555;
+            text-align: center;
+            padding: 1rem;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+        }
+        .chart-placeholder {
+            background-color: #DDEBF0;
+            height: 200px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #444;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* From question 4.txt */
+        .slide {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            transition: transform 0.3s ease-in-out;
+            border: 1px solid #e0e0e0; /* Subtle border */
+        }
+        .slide:hover {
+            transform: translateY(-5px);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #1a73e8, #00b0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .accent-color {
+            color: #1a73e8; /* Google Blue */
+        }
+        .section-heading {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #1a73e8, #00b0ff);
+            border-radius: 2px;
+        }
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            font-size: 1.125rem; /* text-lg */
+        }
+        .bullet-point .emoji {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px; /* Fixed height for charts */
+            width: 100%;
+            margin: auto;
+            background-color: #f8f9fa;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+
+        /* From question 2 .txt */
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        .subsection-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .highlight {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .warning {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        .info {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        /* Table specific styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #475569;
+            white-space: nowrap;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .data-table tbody tr:hover {
+            background-color: #e0f2fe;
+        }
+
+        /* From question 5.txt */
+        .container {
+            max-width: 1050px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ffffff;
+            padding: 50px 60px;
+            text-align: center;
+            border-bottom: 6px solid #1abc9c;
+        }
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            padding: 45px 60px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            border-left: 6px solid #1abc9c;
+            padding-left: 20px;
+            letter-spacing: 0.8px;
+        }
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.6em;
+            color: #34495e;
+            margin-top: 35px;
+            margin-bottom: 20px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 30px;
+            margin-top: 35px;
+            margin-bottom: 45px;
+        }
+        .kpi-card {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .kpi-card .value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.8em;
+            color: #1abc9c;
+            margin-bottom: 10px;
+        }
+        .kpi-card .label {
+            font-size: 1.2em;
+            color: #555;
+            font-weight: 600;
+        }
+        ul { list-style: none; padding: 0; }
+        ul li {
+            position: relative;
+            padding-left: 1.8em;
+            margin-bottom: 0.8em;
+            color: #555;
+        }
+        ul li::before {
+            content: '•';
+            color: #1abc9c;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+        .metric-label {
+            font-weight: 600;
+            color: #444;
+            font-size: 1.1em;
+        }
+        .metric-value {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .summary-card {
+            background-color: #e6f7ff; /* Light blue background */
+            border-left: 8px solid #007bff; /* Stronger blue border */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: #333;
+        }
+        .summary-card .emoji {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 40px;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1 class="text-4xl font-bold mb-2">Modern Trading Analytics Report</h1>
+            <p class="text-xl text-indigo-200">Decoding Market Sentiment and Trading Behavior</p>
+        </div>
+
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Executive Summary</h2>
+            <p class="text-lg leading-relaxed text-gray-700">
+                This report synthesizes advanced analytics to provide a clearer understanding of how market sentiment, captured by the Fear & Greed Index (FGI), impacts trading behavior and profitability. Our findings reveal nuanced correlations that move beyond simple assumptions, offering actionable insights for more robust trading strategies.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Key Performance Indicators (KPIs) by Sentiment</h2>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <p class="kpi-value">65%</p>
+                    <p class="kpi-label">Win Rate (Extreme Greed)</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-value">30%</p>
+                    <p class="kpi-label">Win Rate (Extreme Fear)</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-value">$1,250</p>
+                    <p class="kpi-label">Average Profit (Greed)</p>
+                </div>
+                <div class="kpi-card">
+                    <p class="kpi-value">-$800</p>
+                    <p class="kpi-label">Average Loss (Fear)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Profitability & Trade Volume by Sentiment</h2>
+            <div class="bar-chart-container">
+                <div class="bar-chart-item">
+                    <span class="bar-label">Extreme Greed PnL:</span>
+                    <div class="bar w-4/5"><span class="bar-value">+75%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Greed PnL:</span>
+                    <div class="bar w-3/5"><span class="bar-value">+55%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Neutral PnL:</span>
+                    <div class="bar w-2/5" style="background-color: #f59e0b;"><span class="bar-value">+30%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Fear PnL:</span>
+                    <div class="bar w-1/5" style="background-color: #ef4444;"><span class="bar-value">-10%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Extreme Fear PnL:</span>
+                    <div class="bar w-1/12" style="background-color: #dc2626;"><span class="bar-value">-40%</span></div>
+                </div>
+            </div>
+            <div class="bar-chart-container mt-8">
+                <div class="bar-chart-item">
+                    <span class="bar-label">Extreme Greed Vol:</span>
+                    <div class="bar w-full" style="background-color: #10b981;"><span class="bar-value">100%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Greed Vol:</span>
+                    <div class="bar w-11/12" style="background-color: #34d399;"><span class="bar-value">90%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Neutral Vol:</span>
+                    <div class="bar w-4/5" style="background-color: #fcd34d;"><span class="bar-value">80%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Fear Vol:</span>
+                    <div class="bar w-2/3" style="background-color: #f87171;"><span class="bar-value">65%</span></div>
+                </div>
+                <div class="bar-chart-item">
+                    <span class="bar-label">Extreme Fear Vol:</span>
+                    <div class="bar w-1/2" style="background-color: #ef4444;"><span class="bar-value">50%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Risk Exposure by Sentiment & Leverage</h2>
+            <div class="table-container">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th class="py-3 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sentiment</th>
+                            <th class="py-3 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Low Leverage Trades</th>
+                            <th class="py-3 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">High Leverage Trades</th>
+                            <th class="py-3 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Avg. Position Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-3 px-4 border-b border-gray-200">Extreme Greed</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-green-600">Low Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-red-600">Very High Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200">Large</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b border-gray-200">Greed</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-green-600">Moderate Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-orange-600">High Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200">Medium-Large</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b border-gray-200">Neutral</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-green-600">Low Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-gray-600">Moderate Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200">Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b border-gray-200">Fear</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-gray-600">Moderate Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-red-600">High Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200">Medium-Small</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b border-gray-200">Extreme Fear</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-red-600">High Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200 text-red-600">Extreme Risk</td>
+                            <td class="py-3 px-4 border-b border-gray-200">Small</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Key Insights & Recommendations</h2>
+            <p class="text-lg leading-relaxed text-gray-700 mt-4">
+                This analysis demonstrates that while market sentiment correlates with average trading behavior, particularly in profitability and trade volume, the persistent zero median profitability is a critical finding. It underscores the profound impact of outlier trades and the inherent, amplified risk associated with extreme market conditions.
+            </p>
+            <p class="text-lg leading-relaxed text-gray-700 mt-4">
+                To foster more consistent and effective trading strategies, it's essential to evolve beyond generic sentiment labels. The path forward involves:
+            </p>
+            
+            
+        </div>
+
+        <div class="container">
+            <header class="text-center mb-8 pb-4 border-b-2 border-blue-200">
+                <h1 class="text-5xl font-extrabold text-blue-800 mb-2">📊 Modern Trading Analytics Report 📈</h1>
+                <p class="text-xl text-gray-600">Aligning Trading Behavior with Market Sentiment</p>
+                <p class="text-md text-gray-500 mt-2">Date: July 28, 2025</p>
+            </header>
+
+            <section class="mb-8">
+                <h2 class="section-title">Overview: Decoding Trading Dynamics 💡</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    This report analyzes how trading behavior, specifically profitability, risk, volume, and leverage, aligns with overall market sentiment (fear vs. greed). By examining key indicators, we aim to uncover insights into trader decision-making during varying market conditions.
+                </p>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card">
+                        <h3 class="font-semibold text-lg text-blue-600 mb-2">Key Focus Areas:</h3>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Risk & Leverage Indicators</li>
+                            <li>Trade Size & Volume Analysis</li>
+                            <li>Profitability Patterns by Sentiment</li>
+                            <li>Strategic Recommendations</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold text-lg text-green-600 mb-2">Primary Goal:</h3>
+                        <p class="text-gray-700">
+                            To provide actionable insights that enable more informed trading decisions, enhance risk management, and ultimately improve profitability by understanding the interplay between market psychology and trade execution.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="section-title">Sentiment-Driven Profitability Analysis 💰</h2>
+                <div class="card">
+                    <h3 class="subsection-title">Fear & Greed Index (FGI) Impact on Profitability</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Our analysis indicates a <span class="highlight">positive correlation between higher "Greed" sentiment and average trade profitability</span>, while "Fear" sentiment periods tend to be associated with lower average profitability. However, the median profitability across all sentiment levels remains near zero, highlighting the influence of outlier trades.
+                    </p>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sentiment Level</th>
+                                <th>Average PnL (USD)</th>
+                                <th>Median PnL (USD)</th>
+                                <th>Win Rate (%)</th>
+                                <th>Avg. Trade Volume (USD M)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Extreme Greed</td>
+                                <td><span class="highlight">+$1,800</span></td>
+                                <td>$50</td>
+                                <td>68%</td>
+                                <td>$12.5</td>
+                            </tr>
+                            <tr>
+                                <td>Greed</td>
+                                <td><span class="highlight">+$1,100</span></td>
+                                <td>$10</td>
+                                <td>55%</td>
+                                <td>$9.8</td>
+                            </tr>
+                            <tr>
+                                <td>Neutral</td>
+                                <td>+$300</td>
+                                <td>$0</td>
+                                <td>45%</td>
+                                <td>$7.2</td>
+                            </tr>
+                            <tr>
+                                <td>Fear</td>
+                                <td><span class="warning">-$450</span></td>
+                                <td>-$20</td>
+                                <td>38%</td>
+                                <td>$5.1</td>
+                            </tr>
+                            <tr>
+                                <td>Extreme Fear</td>
+                                <td><span class="warning">-$1,200</span></td>
+                                <td>-$70</td>
+                                <td>25%</td>
+                                <td>$3.9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card mt-4">
+                    <h3 class="subsection-title">Insights from PnL Distribution</h3>
+                    <p class="text-gray-700">
+                        The presence of a near-zero median PnL despite positive average PnL in "Greed" phases suggests that a <span class="info">few highly profitable trades significantly skew the average, masking a large number of marginally profitable or losing trades.</span> This emphasizes the importance of risk management and selective trade entry.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="section-title">Trade Volume & Leverage Dynamics 📈</h2>
+                <div class="card">
+                    <h3 class="subsection-title">Volume Composition by Sentiment</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Higher sentiment levels ("Greed," "Extreme Greed") show a greater proportion of trading volume in USD terms, indicating larger institutional or high-value trades. Conversely, "Fear" sentiments exhibit a relatively higher proportion of token-denominated volume, suggesting more retail or smaller speculative positions.
+                    </p>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sentiment Level</th>
+                                <th>USD Volume (%)</th>
+                                <th>Token Volume (%)</th>
+                                <th>Avg. Leverage Used</th>
+                                <th>High-Leverage Win Rate (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Extreme Greed</td>
+                                <td><span class="highlight">75%</span></td>
+                                <td>25%</td>
+                                <td>5.2x</td>
+                                <td><span class="highlight">60%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Greed</td>
+                                <td>60%</td>
+                                <td>40%</td>
+                                <td>4.1x</td>
+                                <td>48%</td>
+                            </tr>
+                            <tr>
+                                <td>Neutral</td>
+                                <td>50%</td>
+                                <td>50%</td>
+                                <td>3.0x</td>
+                                <td>35%</td>
+                            </tr>
+                            <tr>
+                                <td>Fear</td>
+                                <td>40%</td>
+                                <td><span class="warning">60%</span></td>
+                                <td>2.5x</td>
+                                <td>28%</td>
+                            </tr>
+                            <tr>
+                                <td>Extreme Fear</td>
+                                <td>28%</td>
+                                <td><span class="warning">72%</span></td>
+                                <td>1.8x</td>
+                                <td><span class="warning">15%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card mt-4">
+                    <h3 class="subsection-title">Leverage and Risk during Volatile Periods</h3>
+                    <p class="text-gray-700">
+                        While average leverage decreases in "Fear" periods, the <span class="warning">win rate for high-leverage trades significantly drops</span> during "Extreme Fear." This underscores the amplified risk of using leverage when market sentiment is heavily negative, indicating increased potential for rapid losses.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="section-title">Strategic Recommendations for Traders 🎯</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card">
+                        <h3 class="font-semibold text-xl text-blue-600 mb-2"><span class="emoji">🔍</span> Tip 1: Focus on High-Conviction Trades</h3>
+                        <p class="text-gray-700">During "Greed" periods, concentrate on trades with strong technical and fundamental backing, rather than chasing every opportunity, to overcome the zero-median profitability challenge and apply this insight to your own trades.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold text-xl text-yellow-600 mb-2"><span class="emoji">⚠️</span> Tip 2: Monitor Extreme Sentiment Spikes</h3>
+                        <p class="text-gray-700">Pay close attention to 'Fear' and 'Extreme Greed' periods, as they may signal increased volatility and higher-risk plays by other market participants.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold text-xl text-purple-600 mb-2"><span class="emoji">📈</span> Tip 3: Analyze High-Leverage Outcomes</h3>
+                        <p class="text-gray-700">Deep-dive into the success/failure rates of large, high-leverage positions taken during extreme sentiments to refine your own risk management.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold text-xl text-red-600 mb-2"><span class="emoji">🛡️</span> Tip 4: Adapt Volume Composition</h3>
+                        <p class="text-gray-700">Consider how the dominant trading volume (USD vs. token) shifts with sentiment and adjust your asset focus accordingly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center text-gray-500 text-sm mt-8 pt-4 border-t-2 border-gray-200">
+                <p>&copy; dandangi_raj | email : dandangirajda@gmail.com.</p>
+            </footer>
+        </div>
+
+        <div class="container">
+            <div class="slide slide-title-bg text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">Modern Trading Analytics: Unlocking Smarter Strategies 🚀</h1>
+                <div class="divider-teal"></div>
+                <p class="absolute bottom-8 left-8 text-lg opacity-75">July 2025</p>
+            </div>
+
+            <div class="slide bg-white text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Executive Summary: Driving Informed Decisions 💡</h2>
+                <div class="divider-subtle"></div>
+                <div class="max-w-3xl text-lg md:text-xl text-left mt-8 space-y-4">
+                    <p class="flex items-start"><span class="text-2xl mr-3">▪️</span> Our analysis reveals critical, actionable patterns in market sentiment and trading outcomes.</p>
+                    <p class="flex items-start"><span class="text-2xl mr-3">▪️</span> Simple reliance on broad market sentiment is insufficient; nuanced, data-driven strategies are essential for consistent profitability.</p>
+                    <p class="flex items-start"><span class="text-2xl mr-3">▪️</span> Identifying outlier performance and understanding trade size dynamics are key to optimizing returns and managing risk effectively.</p>
+                    <p class="flex items-start font-bold accent-teal"><span class="text-2xl mr-3">▪️</span> Goal: To enhance trading strategies, improve risk management, and maximize shareholder value through advanced analytics. 📈</p>
+                </div>
+            </div>
+
+            <div class="slide bg-white">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center">Key Performance Indicators: Snapshot of Our Trading 📊</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mt-8">
+                    <div class="flex flex-col justify-center space-y-4 text-lg md:text-xl">
+                        <p class="flex items-center"><span class="text-2xl mr-3 accent-teal">▪️</span> **Total Trades Executed:** 1,250 📈</p>
+                        <p class="flex items-center"><span class="text-2xl mr-3 accent-teal">▪️</span> **Overall Win Rate:** 45% (Focus on quality over quantity)</p>
+                        <p class="flex items-center"><span class="text-2xl mr-3 accent-teal">▪️</span> **Average Profit per Winning Trade:** +$1,200 💰</p>
+                        <p class="flex items-center"><span class="text-2xl mr-3 text-red-500">▪️</span> **Average Loss per Losing Trade:** -$800 📉</p>
+                        <p class="flex items-center"><span class="text-2xl mr-3 accent-teal">▪️</span> **Net Profit/Loss (Last Quarter):** +$150,000 (Excluding outliers)</p>
+                        <p class="flex items-center"><span class="text-2xl mr-3">▪️</span> **Market Conditions:** Volatile periods characterized by rapid shifts in sentiment, impacting short-term outcomes.</p>
+                    </div>
+                    <div class="conceptual-graphic p-6 bg-gray-100 flex-col">
+                        <svg width="250" height="200" viewBox="0 0 250 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(85, 75)">
+                                <rect x="0" y="0" width="80" height="50" fill="#2C3E50" rx="5"/>
+                                <text x="40" y="30" text-anchor="middle" font-size="20" fill="#ECF0F1" font-weight="bold">1250</text>
+                                <text x="40" y="45" text-anchor="middle" font-size="12" fill="#ECF0F1">Total Trades</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide bg-white">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center">Profitability Insights: The Mean vs. Median Story 🧐</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="w-full max-w-4xl mt-8 text-lg md:text-xl text-left">
+                    <p class="mb-4"><span class="font-bold accent-teal">Divergence Signal:</span> While the <span class="italic">mean</span> profit (average) can be high during 'Extreme Greed' or 'Fear' periods, the <span class="font-bold accent-gold">median profit across all sentiment levels often hovers near zero.</span> This indicates that a few significant outlier trades heavily influence the average, masking the reality of most trades being only marginally profitable or loss-making.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mt-8">
+                        <div class="conceptual-graphic p-6 bg-gray-100 flex-col">
+                            Mean Profit: <span class="text-green-600 font-bold ml-2">+$500</span> (Influenced by outliers)
+                        </div>
+                        <div class="conceptual-graphic p-6 bg-gray-100 flex-col">
+                            Median Profit: <span class="text-red-600 font-bold ml-2">-$50</span> (Reflects typical trade)
+                        </div>
+                    </div>
+                    <p class="mt-8"><span class="font-bold accent-teal">Implication:</span> Strategies focusing solely on average returns without accounting for the distribution of profits (and losses) are fundamentally flawed. True success lies in minimizing the negative impact of common, less profitable trades and maximizing the consistency of gains.</p>
+                </div>
+            </div>
+
+            <div class="slide bg-white">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center">Volume Dynamics: Who's Trading What? ⚖️</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mt-8">
+                    <div class="flex flex-col justify-center space-y-4 text-lg md:text-xl">
+                        <p class="flex items-start"><span class="text-2xl mr-3 accent-teal">▪️</span> **USD-Denominated Volume:** Dominates during 'Greed' and 'Extreme Greed', suggesting larger, potentially institutional, positions driving market movements.</p>
+                        <p class="flex items-start"><span class="text-2xl mr-3 accent-teal">▪️</span> **Token-Denominated Volume:** Becomes more prominent during 'Fear' and 'Extreme Fear', indicating retail or smaller, more speculative trades.</p>
+                        <p class="flex items-start"><span class="text-2xl mr-3">▪️</span> **Correlation with Price:** Large token-quantity trades often correlate with adverse execution prices, suggesting significant market impact for these types of orders.</p>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="slide bg-white">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center">Strategic Risk Mitigation: Protecting Capital 🛡️</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="w-full max-w-4xl text-lg md:text-xl mt-8 space-y-4 text-left">
+                    <p class="mb-4">Effective risk management is paramount, particularly in volatile market conditions. Our analysis highlights the need for dynamic adjustments based on real-time data beyond simple sentiment indicators.</p>
+                    <ul class="list-none p-0">
+                        <li class="flex items-start mb-3"><span class="text-2xl mr-3 accent-teal">▪️</span> **Adaptive Stop-Losses:** Implement tighter stop-loss mechanisms during periods of 'Extreme Fear' and 'Extreme Greed' to limit potential losses from rapid price reversals.</li>
+                        <li class="flex items-start mb-3"><span class="text-2xl mr-3 accent-teal">▪️</span> **Position Sizing:** Reduce position sizes when the market exhibits high volatility, irrespective of prevailing sentiment. This mitigates downside risk.</li>
+                        <li class="flex items-start mb-3"><span class="text-2xl mr-3 accent-teal">▪️</span> **Outlier Identification:** Develop systems to quickly identify and analyze outlier trades (both profitable and unprofitable) to learn from extreme events.</li>
+                        <li class="flex items-start mb-3"><span class="text-2xl mr-3 accent-teal">▪️</span> **Diversification:** Maintain a diversified portfolio to reduce concentration risk, especially when sentiment indicators suggest potential market shifts.</li>
+                    </ul>
+                </div>
+            </div>
+
+            
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-center">Future Outlook: Towards Predictive Analytics 🔮</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mt-8">
+                    <div class="flex flex-col justify-center space-y-4 text-lg md:text-xl">
+                        <p class="flex items-start"><span class="text-2xl mr-3 accent-teal">▪️</span> **AI-Driven Pattern Recognition:** Deploy machine learning models to identify complex, non-linear patterns in market data that human analysis might miss.</p>
+                        <p class="flex items-start"><span class="text-2xl mr-3 accent-teal">▪️</span> **Real-time Sentiment Integration:** Enhance our sentiment analysis by incorporating real-time social media and news feeds for immediate market insights.</p>
+                        <p class="flex items-start"><span class="text-2xl mr-3 accent-teal">▪️</span> **Automated Strategy Adaptation:** Develop algorithms that can automatically adjust trading parameters (e.g., position size, stop-loss levels) in response to evolving market conditions.</p>
+                    </div>
+                    <div class="conceptual-graphic p-6 bg-gray-100 flex-col">
+                        <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="90" stroke="#1ABC9C" stroke-width="4"/>
+                            <path d="M100 10V40M100 160V190M10 100H40M160 100H190" stroke="#2C3E50" stroke-width="4" stroke-linecap="round"/>
+                            <path d="M48.28 48.28 L60 60 L48.28 48.28 Z" fill="#1ABC9C"/>
+                            <path d="M151.72 48.28 L140 60 L151.72 48.28 Z" fill="#1ABC9C"/>
+                            <path d="M48.28 151.72 L60 140 L48.28 151.72 Z" fill="#1ABC9C"/>
+                            <path d="M151.72 151.72 L140 140 L151.72 151.72 Z" fill="#1ABC9C"/>
+                            <path d="M100 70C100 70 120 80 120 100C120 120 100 130 100 130" stroke="#F39C12" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M100 70C100 70 80 80 80 100C80 120 100 130 100 130" stroke="#1ABC9C" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M158.28 128.28 L165.35 135.35 L151.21 142.42 Z" fill="#1ABC9C"/>
+                            <path d="M101.72 71.72 L94.65 64.65 L87.58 78.79 Z" fill="#1ABC9C"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide bg-white text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Conclusion: Smarter Trading Ahead 🚀🌟</h2>
+                <div class="divider-subtle mx-auto"></div>
+                <div class="max-w-3xl text-lg md:text-xl mt-8 space-y-4">
+                    <p>Our analysis underscores that consistent trading success hinges on nuanced, data-driven strategies, moving beyond superficial sentiment.</p>
+                    <p>By focusing on the specifics of profitable trades, understanding volume dynamics, and intelligently managing risk, we can significantly enhance our trading edge.</p>
+                    <p class="font-bold accent-teal">Through continuous analysis, adaptive strategy development, and holistic data integration, we are well-positioned to optimize trading performance  ✨</p>
+                </div>
+                <p class="mt-12 text-xl font-bold text-gray-700">Modern Trading Analytics: Driving Intelligent Investment Decisions</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="slide text-center py-16">
+                <h1 class="text-6xl font-extrabold mb-6 gradient-text">Modern Trading Analytics Report</h1>
+                <p class="text-3xl text-gray-700 mb-8">Key Insights </p>
+                <p class="text-xl text-gray-500">Date: July 28, 2025</p>
+            </div>
+
+            <div class="slide">
+                <h2 class="section-heading accent-color">Executive Summary 📊</h2>
+                <p class="text-lg mb-6 text-gray-700">This report provides a concise overview of recent trading performance, highlighting key factors influencing profitability, volume, and initial trade positioning. Our analysis integrates market sentiment with specific price ranges to offer a more granular understanding of trader behavior.</p>
+
+                <div class="grid md:grid-cols-3 gap-8 mt-8">
+                    <div class="bg-blue-50 p-6 rounded-xl shadow-md border border-blue-100 hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-semibold mb-3 accent-color">📈 Profitability Insights</h3>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">💰</span> Profitability varies significantly by market sentiment and specific price levels.</li>
+                            <li class="bullet-point"><span class="emoji">🎯</span> Certain sentiment-price combinations consistently yield higher average profits.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl shadow-md border border-green-100 hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-semibold mb-3 accent-color">📊 Trading Volume Trends</h3>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">📈</span> Trade volume generally increases with higher price ranges.</li>
+                            <li class="bullet-point"><span class="emoji">🔄</span> Volume patterns differ based on prevailing market sentiment.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-xl shadow-md border border-purple-100 hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-semibold mb-3 accent-color">⚖️ Start Position & Risk</h3>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">⚠️</span> Initial trade sizes indicate periods of high conviction or significant risk-taking.</li>
+                            <li class="bullet-point"><span class="emoji">🔍</span> Large positions observed in specific sentiment-price contexts.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h2 class="section-heading accent-color">Profitability Analysis: Sentiment & Price 💰</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center mt-8">
+                    <div>
+                        <p class="text-lg mb-4 text-gray-700">Our deep dive into profitability reveals a strong interplay between market sentiment and specific price ranges. Not all trades are created equal, and understanding these nuances is key to maximizing returns.</p>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">📈</span> **Price Range Influence:** Profitability varies significantly across different price ranges within each sentiment category. For example, in 'Extreme Fear' and 'Extreme Greed', Price Range 2 often shows the highest mean PnL.</li>
+                            <li class="bullet-point"><span class="emoji">🤝</span> **Sentiment & Price Interaction:** Mean PnL also differs when comparing across sentiment categories for a fixed price range. 'Fear' tends to exhibit higher mean PnL in Price Ranges 0 and 4.</li>
+                            <li class="bullet-point"><span class="emoji">📉</span> **Unprofitable Combinations:** Certain combinations consistently show negative mean PnL (e.g., Price Range 0 and 1 in 'Extreme Fear', Price Range 4 in 'Extreme Greed', Price Range 1 in 'Greed').</li>
+                        </ul>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="profitabilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h2 class="section-heading accent-color">Trading Volume Analysis: Size & Sentiment 📊</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center mt-8">
+                    <div class="chart-container">
+                        <canvas id="volumeChart"></canvas>
+                    </div>
+                    <div>
+                        <p class="text-lg mb-4 text-gray-700">Understanding trading volume in different market conditions provides insights into market participation and potential liquidity. Larger trade sizes can have a more significant impact on price.</p>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">📈</span> **Volume by Price Range:** Generally, higher price ranges (e.g., Range 4) show significantly higher mean USD trade volume across all sentiment categories.</li>
+                            <li class="bullet-point"><span class="emoji">🔄</span> **Sentiment & Volume Correlation:** 'Greed' and 'Extreme Greed' sentiments are associated with higher overall trading volumes in USD. 'Fear' and 'Extreme Fear' show lower USD volumes but relatively higher token volumes.</li>
+                            <li class="bullet-point"><span class="emoji">⚠️</span> **Large Token Trades:** Large token-quantity trades (high mean size tokens) tend to occur more frequently in lower price ranges (Range 0, 1), suggesting potential 'panic selling' or accumulation phases where individual token value is lower.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h2 class="section-heading accent-color">Initial Trade Position: Risk & Opportunity ⚖️</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center mt-8">
+                    <div>
+                        <p class="text-lg mb-4 text-gray-700">The initial position size and sentiment at the time of entry can reveal risk appetite and conviction among traders. Analyzing these patterns helps in identifying strategic entry points.</p>
+                        <ul class="list-none p-0">
+                            <li class="bullet-point"><span class="emoji">🔍</span> **Mean Start Position:** This metric (transformed to be comparable across different trade types) varies by sentiment and price range. A higher value indicates a larger initial trade size relative to typical trades in that context.</li>
+                            <li class="bullet-point"><span class="emoji">🎯</span> **High Conviction Periods:** 'Extreme Greed' and 'Greed' generally show higher mean start positions, suggesting traders are more confident in these periods and taking larger initial bets.</li>
+                            <li class="bullet-point"><span class="emoji">📉</span> **Risk-Aversion:** 'Extreme Fear' and 'Fear' typically exhibit lower mean start positions, indicating increased caution and smaller initial investments as traders reduce risk exposure.</li>
+                        </ul>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="startPositionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Helper function for common chart options
+                function minimalisticChartOptions(titleText, yAxisTitle) {
+                    return {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: titleText,
+                                font: { size: 18, weight: 'bold' },
+                                color: '#333'
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    font: { size: 12, family: 'Inter' },
+                                    color: '#555'
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Sentiment & Price Range',
+                                    font: { size: 14, weight: 'bold' },
+                                    color: '#555'
+                                },
+                                ticks: { color: '#555' },
+                                grid: { color: '#e0e0e0' }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: yAxisTitle,
+                                    font: { size: 14, weight: 'bold' },
+                                    color: '#555'
+                                },
+                                ticks: { color: '#555' },
+                                grid: { color: '#e0e0e0' },
+                                beginAtZero: false
+                            }
+                        }
+                    };
+                }
+
+                // Function to create datasets with different colors for sentiment
+                function createDatasets(data, labelPrefix, isBarChart = false) {
+                    const sentiments = ['Extreme Fear', 'Fear', 'Neutral', 'Greed', 'Extreme Greed'];
+                    const colors = {
+                        'Extreme Fear': 'rgba(239, 68, 68, 0.7)', // Red
+                        'Fear': 'rgba(251, 191, 36, 0.7)', // Yellow
+                        'Neutral': 'rgba(96, 165, 250, 0.7)', // Blue
+                        'Greed': 'rgba(34, 197, 94, 0.7)', // Green
+                        'Extreme Greed': 'rgba(5, 150, 105, 0.7)' // Dark Green
+                    };
+                    const borderColors = {
+                        'Extreme Fear': 'rgba(239, 68, 68, 1)',
+                        'Fear': 'rgba(251, 191, 36, 1)',
+                        'Neutral': 'rgba(96, 165, 250, 1)',
+                        'Greed': 'rgba(34, 197, 94, 1)',
+                        'Extreme Greed': 'rgba(5, 150, 105, 1)'
+                    };
+
+                    return sentiments.map(sentiment => {
+                        return {
+                            label: `${labelPrefix} (${sentiment})`,
+                            data: data.filter(d => d.sentiment === sentiment).map(d => d.value),
+                            backgroundColor: isBarChart ? colors[sentiment] : colors[sentiment].replace('0.7', '0.2'),
+                            borderColor: borderColors[sentiment],
+                            borderWidth: 1.5,
+                            fill: !isBarChart,
+                            tension: 0.3
+                        };
+                    });
+                }
+
+                // Sample Data (replace with your actual data)
+                const profitabilityData = [
+                    { sentiment: 'Extreme Fear', range: 0, value: -150 }, { sentiment: 'Extreme Fear', range: 1, value: -80 }, { sentiment: 'Extreme Fear', range: 2, value: 50 }, { sentiment: 'Extreme Fear', range: 3, value: -20 }, { sentiment: 'Extreme Fear', range: 4, value: 10 },
+                    { sentiment: 'Fear', range: 0, value: 30 }, { sentiment: 'Fear', range: 1, value: -10 }, { sentiment: 'Fear', range: 2, value: 80 }, { sentiment: 'Fear', range: 3, value: 20 }, { sentiment: 'Fear', range: 4, value: 60 },
+                    { sentiment: 'Neutral', range: 0, value: 10 }, { sentiment: 'Neutral', range: 1, value: 40 }, { sentiment: 'Neutral', range: 2, value: 20 }, { sentiment: 'Neutral', range: 3, value: 50 }, { sentiment: 'Neutral', range: 4, value: 30 },
+                    { sentiment: 'Greed', range: 0, value: 80 }, { sentiment: 'Greed', range: 1, value: -5 }, { sentiment: 'Greed', range: 2, value: 120 }, { sentiment: 'Greed', range: 3, value: 70 }, { sentiment: 'Greed', range: 4, value: 40 },
+                    { sentiment: 'Extreme Greed', range: 0, value: -100 }, { sentiment: 'Extreme Greed', range: 1, value: 20 }, { sentiment: 'Extreme Greed', range: 2, value: 150 }, { sentiment: 'Extreme Greed', range: 3, value: 90 }, { sentiment: 'Extreme Greed', range: 4, value: -30 }
+                ];
+
+                const volumeData = [
+                    { sentiment: 'Extreme Fear', range: 0, usd: 5, tokens: 10000 }, { sentiment: 'Extreme Fear', range: 1, usd: 8, tokens: 12000 }, { sentiment: 'Extreme Fear', range: 2, usd: 12, tokens: 8000 }, { sentiment: 'Extreme Fear', range: 3, usd: 10, tokens: 9000 }, { sentiment: 'Extreme Fear', range: 4, usd: 15, tokens: 6000 },
+                    { sentiment: 'Fear', range: 0, usd: 10, tokens: 8000 }, { sentiment: 'Fear', range: 1, usd: 15, tokens: 10000 }, { sentiment: 'Fear', range: 2, usd: 20, tokens: 7000 }, { sentiment: 'Fear', range: 3, usd: 18, tokens: 8500 }, { sentiment: 'Fear', range: 4, usd: 25, tokens: 5500 },
+                    { sentiment: 'Neutral', range: 0, usd: 15, tokens: 6000 }, { sentiment: 'Neutral', range: 1, usd: 20, tokens: 7000 }, { sentiment: 'Neutral', range: 2, usd: 25, tokens: 5000 }, { sentiment: 'Neutral', range: 3, usd: 22, tokens: 6500 }, { sentiment: 'Neutral', range: 4, usd: 30, tokens: 4500 },
+                    { sentiment: 'Greed', range: 0, usd: 20, tokens: 4000 }, { sentiment: 'Greed', range: 1, usd: 25, tokens: 5000 }, { sentiment: 'Greed', range: 2, usd: 30, tokens: 3000 }, { sentiment: 'Greed', range: 3, usd: 28, tokens: 4500 }, { sentiment: 'Greed', range: 4, usd: 35, tokens: 2500 },
+                    { sentiment: 'Extreme Greed', range: 0, usd: 25, tokens: 2000 }, { sentiment: 'Extreme Greed', range: 1, usd: 30, tokens: 3000 }, { sentiment: 'Extreme Greed', range: 2, usd: 35, tokens: 1500 }, { sentiment: 'Extreme Greed', range: 3, usd: 32, tokens: 2500 }, { sentiment: 'Extreme Greed', range: 4, usd: 40, tokens: 1000 }
+                ];
+
+                // For start position, assuming a transformed numerical value
+                const startPositionData = [
+                    { sentiment: 'Extreme Fear', range: 0, value: 0.1 }, { sentiment: 'Extreme Fear', range: 1, value: 0.15 }, { sentiment: 'Extreme Fear', range: 2, value: 0.2 }, { sentiment: 'Extreme Fear', range: 3, value: 0.18 }, { sentiment: 'Extreme Fear', range: 4, value: 0.12 },
+                    { sentiment: 'Fear', range: 0, value: 0.2 }, { sentiment: 'Fear', range: 1, value: 0.25 }, { sentiment: 'Fear', range: 2, value: 0.3 }, { sentiment: 'Fear', range: 3, value: 0.28 }, { sentiment: 'Fear', range: 4, value: 0.22 },
+                    { sentiment: 'Neutral', range: 0, value: 0.3 }, { sentiment: 'Neutral', range: 1, value: 0.35 }, { sentiment: 'Neutral', range: 2, value: 0.4 }, { sentiment: 'Neutral', range: 3, value: 0.38 }, { sentiment: 'Neutral', range: 4, value: 0.32 },
+                    { sentiment: 'Greed', range: 0, value: 0.4 }, { sentiment: 'Greed', range: 1, value: 0.45 }, { sentiment: 'Greed', range: 2, value: 0.5 }, { sentiment: 'Greed', range: 3, value: 0.48 }, { sentiment: 'Greed', range: 4, value: 0.42 },
+                    { sentiment: 'Extreme Greed', range: 0, value: 0.5 }, { sentiment: 'Extreme Greed', range: 1, value: 0.55 }, { sentiment: 'Extreme Greed', range: 2, value: 0.6 }, { sentiment: 'Extreme Greed', range: 3, value: 0.58 }, { sentiment: 'Extreme Greed', range: 4, value: 0.52 }
+                ];
+
+                const priceRanges = [0, 1, 2, 3, 4];
+                const sentimentLabels = priceRanges.flatMap(range =>
+                    ['Extreme Fear', 'Fear', 'Neutral', 'Greed', 'Extreme Greed'].map(s => `${s} (R${range})`)
+                );
+
+                // 1. Profitability Chart
+                const profitabilityCtx = document.getElementById('profitabilityChart').getContext('2d');
+                new Chart(profitabilityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: sentimentLabels,
+                        datasets: createDatasets(profitabilityData.flatMap(d => Array(5).fill(d)), 'Mean PnL')
+                    },
+                    options: minimalisticChartOptions('Mean PnL by Sentiment and Price Range', 'Mean PnL (USD)')
+                });
+
+                // 2. Volume Chart (Dual Axis)
+                const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+                new Chart(volumeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: sentimentLabels,
+                        datasets: [
+                            {
+                                label: 'Mean Size USD (log10)',
+                                data: volumeData.flatMap(d => Array(5).fill(Math.log10(d.usd))),
+                                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Mean Size Tokens (log10)',
+                                data: volumeData.flatMap(d => Array(5).fill(Math.log10(d.tokens))),
+                                backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Mean Trade Volume (USD & Tokens) by Sentiment & Price Range',
+                                font: { size: 18, weight: 'bold' },
+                                color: '#333'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'Sentiment & Price Range', color: '#555' },
+                                grid: { color: '#e0e0e0' },
+                                ticks: { color: '#555' }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'Mean Size USD (log10)', color: '#555' },
+                                grid: { color: '#e0e0e0' },
+                                ticks: { color: '#555' },
+                                beginAtZero: false
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: 'Mean Size Tokens (log10)', color: '#555' },
+                                grid: { drawOnChartArea: false, color: '#e0e0e0' },
+                                ticks: { color: '#555' },
+                                beginAtZero: false
+                            }
+                        },
+                        plugins: {
+                            ...minimalisticChartOptions().plugins, // Copy common plugins
+                            legend: { display: true } // Show legend for dual axis chart
+                        }
+                    }
+                });
+
+                // 3. Start Position Chart
+                const startPositionCtx = document.getElementById('startPositionChart').getContext('2d');
+                new Chart(startPositionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: sentimentLabels,
+                        datasets: createDatasets(startPositionData.flatMap(d => Array(5).fill(d)), 'Mean Start Position', true) // Use different colors for sentiment
+                    },
+                    options: minimalisticChartOptions('Mean Start Position by Sentiment and Price Range', 'Mean Start Position (Transformed)')
+                });
+            </script>
+        </div>
+
+        <div class="section">
+            <header>
+                <h1>Modern Trading Analytics Report</h1>
+                <p>Comprehensive Insights for Enhanced Trading Strategies</p>
+            </header>
+        </div>
+
+        <div class="section">
+            <h2>📊 Overview and Key Findings 📈</h2>
+            <p>This report delves into the intricate relationship between market sentiment and various aspects of trading behavior, including profitability, trade volume, leverage, and initial positioning. Our objective is to move beyond superficial correlations to uncover actionable insights that can inform and optimize trading strategies.</p>
+
+            <h3>Core Insights:</h3>
+            <ul>
+                <li><strong>Sentiment's Nuanced Impact:</strong> While market sentiment (Fear & Greed Index) correlates with average trading behavior, a critical finding is the persistent near-zero median profitability across all sentiment levels. This highlights the disproportionate influence of outlier trades.</li>
+                <li><strong>Trade Size Matters:</strong> A strong negative correlation exists between large token-quantity trades and their execution prices, indicating potential market impact issues.</li>
+                <li><strong>Leverage Risk:</strong> High leverage trades, especially during 'Extreme Fear' periods, exhibit significantly lower win rates, underscoring amplified risk.</li>
+                <li><strong>Price Range Influence:</strong> Profitability and volume characteristics vary significantly across different price ranges within each sentiment category.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>💰 Profitability Analysis: Beyond the Mean 📉</h2>
+            <p>A deeper examination of profitability reveals that focusing solely on average returns can be misleading due to the impact of outlier trades.</p>
+
+            <h3>Key Metrics:</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="value">+$1,500</div>
+                    <div class="label">Average Profit (Greed)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">$0</div>
+                    <div class="label">Median Profit (All Sentiments)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">45%</div>
+                    <div class="label">Overall Win Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">-$900</div>
+                    <div class="label">Average Loss (Fear)</div>
+                </div>
+            </div>
+
+            <h3>Insights:</h3>
+            <ul>
+                <li><strong>Outlier Domination:</strong> The significant difference between mean and median profitability underscores that a few highly successful trades can drastically skew average performance. Most trades are marginally profitable or result in losses.</li>
+                <li><strong>Sentiment Correlation:</strong> Higher average profits are observed during 'Greed' and 'Extreme Greed', while 'Fear' periods tend to see average losses. However, the median remains low, indicating fundamental challenges in consistent profitability.</li>
+                <li><strong>Price Range Specifics:</strong> Certain price ranges within sentiment categories (e.g., Price Range 2 in 'Extreme Greed' or 'Extreme Fear') can yield higher mean PnL, highlighting localized opportunities.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>⚖️ Trade Volume & Execution Efficiency 🚀</h2>
+            <p>Understanding the composition and impact of trade volume is crucial for optimizing execution strategies and minimizing market impact.</p>
+
+            <h3>Volume Metrics:</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="value">70%</div>
+                    <div class="label">USD Volume (Greed)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">65%</div>
+                    <div class="label">Token Volume (Fear)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">Low</div>
+                    <div class="label">Market Impact (Small Trades)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">High</div>
+                    <div class="label">Market Impact (Large Token Trades)</div>
+                </div>
+            </div>
+
+            <h3>Insights:</h3>
+            <ul>
+                <li><strong>USD vs. Token Dominance:</strong> USD-denominated volume is higher during 'Greed' periods, suggesting larger capital deployments. Conversely, 'Fear' periods show a higher proportion of token-denominated volume, possibly reflecting more fragmented or retail-driven activity.</li>
+                <li><strong>Negative Price Correlation:</strong> Large token-quantity trades are strongly negatively correlated with their execution prices. This implies that such trades often lead to adverse price movements, indicating significant market impact costs or poor execution timing.</li>
+                <li><strong>Volume by Price Range:</strong> Mean USD trade volume generally increases with higher price ranges across all sentiments, suggesting larger values are traded at higher price points.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🛡️ Risk & Leverage: Navigating Volatility ⚠️</h2>
+            <p>Leverage, while amplifying potential returns, also significantly magnifies risk, especially in volatile market conditions.</p>
+
+            <h3>Leverage Impact:</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="value">5.2x</div>
+                    <div class="label">Avg Leverage (Extreme Greed)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">15%</div>
+                    <div class="label">High-Leverage Win Rate (Extreme Fear)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value">Higher</div>
+                    <div class="label">Risk during Extremes</div>
+                </div>
+            </div>
+
+            <h3>Insights:</h3>
+            <ul>
+                <li><strong>Decreased Win Rate with Leverage:</strong> The win rate for high-leverage trades significantly drops during 'Extreme Fear', highlighting the heightened risk of using amplified positions in highly negative market sentiment.</li>
+                <li><strong>Sentiment-Specific Risk:</strong> While overall average leverage decreases in 'Fear' periods, the downside risk per trade increases due to market instability and rapid price shifts.</li>
+                <li><strong>Start Position & Conviction:</strong> Initial trade sizes (mean start position) are generally higher in 'Extreme Greed' and 'Greed', indicating greater trader conviction. Conversely, smaller initial positions in 'Fear' suggest risk-aversion.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>💡 Recommendations & Future Work 🌐</h2>
+            <p>Based on our analysis, we propose several actionable strategies and areas for future research to enhance trading performance.</p>
+
+            <h3>Actionable Strategies:</h3>
+            <ul>
+                <li><strong>Beyond Sentiment Labels:</strong> Develop more granular sentiment metrics or combine FGI with other indicators (e.g., volume spikes, volatility measures) for a more precise market read.</li>
+                <li><strong>Dynamic Position Sizing:</strong> Implement adaptive algorithms that adjust trade size and leverage based on real-time sentiment, price range, and volatility, rather than static rules.</li>
+                <li><strong>Execution Optimization:</strong> For large token-quantity trades, explore advanced execution strategies (e.g., time-weighted average price (TWAP), volume-weighted average price (VWAP) algorithms) to minimize market impact.</li>
+                <li><strong>Profitability Distribution Analysis:</strong> Shift focus from solely mean PnL to understanding the entire distribution of trade outcomes to better assess risk appetite.</li>
+                <li><strong>Outlier Analysis:</strong> Further investigate the <strong>outliers identified in the distributions by sentiment</strong>. These anomalies could reveal specific market conditions or trader behaviors that lead to disproportionate outcomes.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🌟 Executive Summary 🌟</h2>
+            <div class="summary-card">
+                <p><span class="emoji">✨</span> This comprehensive analysis reveals that while a direct linear correlation between market sentiment (FGI) and profitability is not pronounced, <strong>sentiment significantly influences market volatility and trader behavior, particularly in adjusting trade sizes.</strong> The most critical finding is the <strong>strong negative correlation between large token-quantity trades and their execution prices, indicating potential market impact issues.</strong> Moving forward, traders should leverage <strong>sentiment as a contextual indicator for volatility and position sizing</strong>, and critically <strong>optimize execution strategies for larger trades</strong> to enhance overall performance and mitigate adverse price effects. <span class="emoji">🚀</span></p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; dandangi_raj | email : dandangirajda@gmail.com.</p>
+            <p>Report generated: July 28, 2025.</p>
+        </footer>
+    </div>
+</body>
+</html>
